@@ -6,10 +6,13 @@ import dateutil.parser
 import pytz
 import requests
 import logging
+from urllib3 import disable_warnings
+from urllib3.exceptions import InsecureRequestWarning
 
 from models import FlagStatus, SubmitResult
 
 logger = logging.getLogger(__name__)
+disable_warnings(InsecureRequestWarning)
 
 
 class ChecksystemResult(Enum):
@@ -37,35 +40,34 @@ class GetInfoResult(Enum):
 
 
 RESPONSES = {
-    FlagStatus.ACCEPTED: {
-        ChecksystemResult.SUCCESS: 'success'
-    },
+    FlagStatus.ACCEPTED: {ChecksystemResult.SUCCESS: "success"},
     FlagStatus.QUEUED: {
-        ChecksystemResult.ERROR_UNKNOWN: 'unknown error',
-        ChecksystemResult.ERROR_ACCESS_DENIED: 'access denied',
-        ChecksystemResult.ERROR_COMPETITION_NOT_STARTED: 'competition has not started',
-        ChecksystemResult.ERROR_COMPETITION_PAUSED: 'competition is paused',
-        ChecksystemResult.ERROR_COMPETITION_FINISHED: 'competition has finished',
-        ChecksystemResult.ERROR_RATELIMIT: 'ratelimit exceeded',
-        ChecksystemResult.ERROR_SERVICE_STATE_INVALID: 'attacking team service down',
+        ChecksystemResult.ERROR_UNKNOWN: "unknown error",
+        ChecksystemResult.ERROR_ACCESS_DENIED: "access denied",
+        ChecksystemResult.ERROR_COMPETITION_NOT_STARTED: "competition has not started",
+        ChecksystemResult.ERROR_COMPETITION_PAUSED: "competition is paused",
+        ChecksystemResult.ERROR_COMPETITION_FINISHED: "competition has finished",
+        ChecksystemResult.ERROR_RATELIMIT: "ratelimit exceeded",
+        ChecksystemResult.ERROR_SERVICE_STATE_INVALID: "attacking team service down",
     },
     FlagStatus.REJECTED: {
-        ChecksystemResult.ERROR_FLAG_INVALID: 'invalid flag',
-        ChecksystemResult.ERROR_FLAG_EXPIRED: 'expired',
-        ChecksystemResult.ERROR_FLAG_YOUR_OWN: 'you own flag',
-        ChecksystemResult.ERROR_FLAG_SUBMITTED: 'already submitted',
-        ChecksystemResult.ERROR_FLAG_NOT_FOUND: 'not found',
-    }
+        ChecksystemResult.ERROR_FLAG_INVALID: "invalid flag",
+        ChecksystemResult.ERROR_FLAG_EXPIRED: "expired",
+        ChecksystemResult.ERROR_FLAG_YOUR_OWN: "you own flag",
+        ChecksystemResult.ERROR_FLAG_SUBMITTED: "already submitted",
+        ChecksystemResult.ERROR_FLAG_NOT_FOUND: "not found",
+    },
 }
 
 
 class API:
-    def __init__(self, host: str, timezone: str, version='v1'):
-        self.api_base = f'https://{host}/api/flag/{version}'
+    def __init__(self, host: str, timezone: str, version="v1"):
+        self.api_base = f"https://{host}/api/flag/{version}"
         self.timezone = pytz.timezone(timezone)
+        self._request_kwargs = {"verify": False}
 
     def flag_is_fresh(self, info, until_seconds=2):
-        expiry = dateutil.parser.parse(info['exp'])
+        expiry = dateutil.parser.parse(info["exp"])
         until = datetime.datetime.now() + datetime.timedelta(seconds=until_seconds)
         until = self.timezone.localize(until)
         return expiry >= until
@@ -75,7 +77,7 @@ class API:
             info = response.json()
             if self.flag_is_fresh(info):
                 return True, None
-            return False, SubmitResult(flag, FlagStatus.REJECTED, 'expired')
+            return False, SubmitResult(flag, FlagStatus.REJECTED, "expired")
 
         try:
             respcode = GetInfoResult[response.text]
@@ -83,12 +85,21 @@ class API:
             respcode = GetInfoResult.ERROR_UNKNOWN
 
         if respcode == GetInfoResult.ERROR_RATELIMIT:
-            return False, SubmitResult(flag, FlagStatus.QUEUED, 'flag info ratelimit')
+            return False, SubmitResult(flag, FlagStatus.QUEUED, "flag info ratelimit")
 
-        return False, SubmitResult(flag, FlagStatus.QUEUED, f'error response from flag getinfo: {respcode}')
+        return False, SubmitResult(
+            flag, FlagStatus.QUEUED, f"error response from flag getinfo: {respcode}"
+        )
 
     def info_flags(self, *flags: str):
-        responses = list(map(lambda flag: requests.get(f'{self.api_base}/info/{flag}'), flags))
+        responses = list(
+            map(
+                lambda flag: requests.get(
+                    f"{self.api_base}/info/{flag}", **self._request_kwargs
+                ),
+                flags,
+            )
+        )
         return dict(zip(flags, map(self.parse_flag_info_response, flags, responses)))
 
     @staticmethod
@@ -102,20 +113,30 @@ class API:
             if result_code in possible_codes:
                 return SubmitResult(flag, status, RESPONSES[status][result_code])
 
-        return SubmitResult(flag, FlagStatus.QUEUED, f'unknown checksystem code: {result_code}')
+        return SubmitResult(
+            flag, FlagStatus.QUEUED, f"unknown checksystem code: {result_code}"
+        )
 
     def submit_flags(self, *flags: str):
-        h = {'Content-Type': 'text/plain'}
-        responses = [requests.post(f'{self.api_base}/submit', data=flag, headers=h) for flag in flags]
+        h = {"Content-Type": "text/plain"}
+        responses = [
+            requests.post(
+                f"{self.api_base}/submit",
+                data=flag,
+                headers=h,
+                **self._request_kwargs,
+            )
+            for flag in flags
+        ]
         return map(self.parse_flag_submit_response, flags, responses)
 
 
 def submit_flags(flags, config):
     flags = list(map(lambda flag: flag.flag, flags))
 
-    api = API(host=config['SYSTEM_HOST'], timezone=config['TIMEZONE'])
-    info_rate = config['INFO_FLAG_LIMIT']
-    submit_rate = config['SUBMIT_FLAG_LIMIT']
+    api = API(host=config["SYSTEM_HOST"], timezone=config["TIMEZONE"])
+    info_rate = config["INFO_FLAG_LIMIT"]
+    submit_rate = config["SUBMIT_FLAG_LIMIT"]
 
     # Get as much flag infos as we can
     flags_info = api.info_flags(*flags[:info_rate])
@@ -126,7 +147,7 @@ def submit_flags(flags, config):
     # Other flags which are expired / invalid
     other_flags = map(
         lambda flag: flags_info[flag][1],
-        filter(lambda flag: not flags_info[flag][0], flags_info)
+        filter(lambda flag: not flags_info[flag][0], flags_info),
     )
     # Add extra flags to submit if we don't hae submit_rate valid flags
     if len(to_submit) < submit_rate:
@@ -134,8 +155,8 @@ def submit_flags(flags, config):
         to_submit += flags[info_rate:flags_processed]
 
     queued = map(
-        lambda f: SubmitResult(f, FlagStatus.QUEUED, 'flag submission ratelimit'),
-        to_submit[submit_rate:] + flags[flags_processed:]
+        lambda f: SubmitResult(f, FlagStatus.QUEUED, "flag submission ratelimit"),
+        to_submit[submit_rate:] + flags[flags_processed:],
     )
 
     results = chain(

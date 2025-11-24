@@ -2,13 +2,17 @@ import copy
 
 import jwt
 import requests
+from urllib3 import disable_warnings
+from urllib3.exceptions import InsecureRequestWarning
 
 API_PREFIX = 'api/capsule/v1'
 PUBLIC_KEY_ENDPOINT = 'public_key'
 
+disable_warnings(InsecureRequestWarning)
+
 
 def get_public_key(host):
-    r = requests.get(f"{host}/{API_PREFIX}/{PUBLIC_KEY_ENDPOINT}")
+    r = requests.get(f"{host}/{API_PREFIX}/{PUBLIC_KEY_ENDPOINT}", verify=False)
 
     if r is not None and r.status_code == requests.codes.ok:
         return r.text

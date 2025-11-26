@@ -3,7 +3,7 @@
     <q-header elevated class="terminal-header bg-cbs text-cbs">
       <q-toolbar class="terminal-toolbar bg-cbs text-cbs">
         <q-avatar>
-          <img src="@/assets/cat.png" />
+          <img src="@/assets/logo.png" />
         </q-avatar>
         <q-toolbar-title> f4rm1lk4 </q-toolbar-title>
         <q-tabs class="terminal-tabs bg-cbs text-cbs" shrink>

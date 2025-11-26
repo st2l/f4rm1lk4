@@ -16,14 +16,14 @@ export default {
 
 <style lang="scss">
 :root {
-  --terminal-bg: #020c02;
-  --terminal-panel: #061307;
-  --terminal-panel-hover: #0f3011;
-  --terminal-border: #32ff74;
-  --terminal-border-muted: rgba(50, 255, 116, 0.3);
-  --terminal-text: #c2ffc3;
-  --terminal-text-strong: #74ff5e;
-  --terminal-muted: #6dcf69;
+  --terminal-bg: #050805;
+  --terminal-panel: #0c1f11;
+  --terminal-panel-hover: #173c22;
+  --terminal-border: #33ff66;
+  --terminal-border-muted: rgba(51, 255, 102, 0.35);
+  --terminal-text: #fefefe;
+  --terminal-text-strong: #d4ffd4;
+  --terminal-muted: #7ed38f;
 }
 
 html,
@@ -37,7 +37,7 @@ body,
 
 body {
   font-family: "Source Code Pro", monospace !important;
-  text-shadow: 0 0 6px rgba(55, 255, 125, 0.22);
+  text-shadow: 0 0 6px rgba(51, 255, 138, 0.28);
   line-height: 1.55;
 }
 
@@ -48,7 +48,7 @@ body::before {
   pointer-events: none;
   background: repeating-linear-gradient(
     transparent 0 2px,
-    rgba(0, 0, 0, 0.22) 2px 4px
+    rgba(12, 38, 14, 0.3) 2px 4px
   );
   opacity: 0.25;
   mix-blend-mode: soft-light;
@@ -60,14 +60,14 @@ body::before {
 }
 
 .bg-cbs {
-  background: radial-gradient(circle at 20% 20%, #0c2b0f, #010a03) !important;
+  background: radial-gradient(circle at 20% 20%, #0e2611, #030904) !important;
   border-bottom: 1px solid var(--terminal-border);
 }
 
 .terminal-layout,
 .q-page-container,
 .q-page {
-  background: radial-gradient(circle at top, rgba(8, 35, 8, 0.45), transparent)
+  background: radial-gradient(circle at top, rgba(24, 79, 37, 0.3), transparent)
       no-repeat,
     var(--terminal-bg);
   color: var(--terminal-text);
@@ -91,30 +91,37 @@ body::before {
 
 .q-card,
 .q-table__container {
-  background: rgba(2, 14, 6, 0.9);
+  background: rgba(6, 24, 12, 0.92) !important;
   border: 1px solid var(--terminal-border);
-  box-shadow: 0 0 24px rgba(40, 255, 122, 0.15);
+  box-shadow: 0 0 24px rgba(51, 255, 138, 0.2);
+}
+
+.q-card__section,
+.q-card__actions {
+  background: transparent !important;
+  color: var(--terminal-text);
 }
 
 .q-table thead tr,
 .q-table tbody tr {
-  background: transparent !important;
+  background: rgba(5, 18, 10, 0.92) !important;
 }
 
 .q-table th,
 .q-table td {
   border-color: var(--terminal-border-muted) !important;
   color: var(--terminal-text);
+  background: transparent;
 }
 
 .q-table__top,
 .q-table__bottom {
-  background: rgba(2, 14, 6, 0.95);
+  background: rgba(5, 25, 12, 0.95);
   border-top: 1px solid var(--terminal-border-muted);
 }
 
 .q-field__control {
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(7, 34, 17, 0.65);
   border: 1px solid var(--terminal-border-muted);
 }
 
@@ -142,7 +149,7 @@ body::before {
   color: var(--terminal-text) !important;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  box-shadow: 0 0 14px rgba(61, 255, 131, 0.35);
+  box-shadow: 0 0 14px rgba(51, 255, 138, 0.4);
 }
 
 .q-btn.bg-cbs:hover,

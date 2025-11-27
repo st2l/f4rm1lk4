@@ -5,7 +5,7 @@ def _default_teams():
 # === Protocol: RuCTF TCP ===
 RUCTF_TCP_CONFIG = {
     "SYSTEM_PROTOCOL": "ructf_tcp",
-    "DEBUG": True,
+    "DEBUG": False,
     "SERVER_PASSWORD": "1234",
     "TEAMS": _default_teams(),
     "FLAG_FORMAT": r"[A-Z0-9]{31}=",
@@ -21,7 +21,7 @@ RUCTF_TCP_CONFIG = {
 # === Protocol: CTF Cup TCP ===
 CTFCUP_TCP_CONFIG = {
     "SYSTEM_PROTOCOL": "ctfcup_tcp",
-    "DEBUG": True,
+    "DEBUG": False,
     "SERVER_PASSWORD": "1234",
     "TEAMS": _default_teams(),
     "FLAG_FORMAT": r"[A-Z0-9]{31}=",
@@ -37,7 +37,7 @@ CTFCUP_TCP_CONFIG = {
 # === Protocol: Faust TCP ===
 FAUST_CONFIG = {
     "SYSTEM_PROTOCOL": "faust",
-    "DEBUG": True,
+    "DEBUG": False,
     "SERVER_PASSWORD": "1234",
     "TEAMS": _default_teams(),
     "FLAG_FORMAT": r"[A-Z0-9]{31}=",
@@ -53,7 +53,7 @@ FAUST_CONFIG = {
 # === Protocol: RuCTF HTTP ===
 RUCTF_HTTP_CONFIG = {
     "SYSTEM_PROTOCOL": "ructf_http",
-    "DEBUG": True,
+    "DEBUG": False,
     "SERVER_PASSWORD": "1234",
     "TEAMS": _default_teams(),
     "FLAG_FORMAT": r"[A-Z0-9]{31}=",
@@ -69,7 +69,7 @@ RUCTF_HTTP_CONFIG = {
 # === Protocol: VolgaCTF v2 ===
 VOLGACTF_CONFIG = {
     "SYSTEM_PROTOCOL": "volgactf",
-    "DEBUG": True,
+    "DEBUG": False,
     "SERVER_PASSWORD": "1234",
     "TEAMS": _default_teams(),
     "FLAG_FORMAT": r"[A-Z0-9]{31}=",
@@ -87,7 +87,7 @@ VOLGACTF_CONFIG = {
 # === Protocol: VolgaCTF legacy ===
 VOLGACTF_OLD_CONFIG = {
     "SYSTEM_PROTOCOL": "volgactf_old",
-    "DEBUG": True,
+    "DEBUG": False,
     "SERVER_PASSWORD": "1234",
     "TEAMS": _default_teams(),
     "FLAG_FORMAT": r"[A-Z0-9]{31}=",
@@ -102,7 +102,7 @@ VOLGACTF_OLD_CONFIG = {
 # === Protocol: CTF Moscow ===
 CTF_MOSCOW_CONFIG = {
     "SYSTEM_PROTOCOL": "ctf_moscow",
-    "DEBUG": True,
+    "DEBUG": False,
     "SERVER_PASSWORD": "1234",
     "TEAMS": _default_teams(),
     "FLAG_FORMAT": r"[A-Z0-9]{31}=",
